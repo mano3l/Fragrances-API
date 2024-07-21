@@ -21,7 +21,4 @@ public class Fragrance {
     @Column(name = "name")
     private String name;
 
-    public Fragrance(String name) {
-        this.name = name;
-    }
 }
