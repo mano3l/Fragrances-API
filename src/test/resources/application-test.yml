@@ -1,6 +1,6 @@
 spring:
-  sql:
-    init:
-      mode: always
   jpa:
     show-sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
