@@ -18,4 +18,8 @@ public class FragranceService {
     public Fragrance retrieveFragrance(UUID id) {
         return this.fragranceRepository.findById(id).orElseThrow(() -> new RuntimeException("No fragrance found"));
     }
+
+    public Fragrance saveFragrance(Fragrance fragrance) {
+        return this.fragranceRepository.save(fragrance);
+    }
 }

@@ -43,6 +43,7 @@ class FragranceControllerTests {
     }
 
     @Test
+    @DisplayName("Get fragrance by ID")
     @Sql(scripts = "classpath:scripts/insert_fragrance.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void shouldGetFragranceById() {
         String id = "cd7534fa-6dab-4fa5-9411-102fc2ccf0bf";
