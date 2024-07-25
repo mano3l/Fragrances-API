@@ -38,3 +38,6 @@ flyway.conf
 
 ### Sql ###
 *.sql
+
+### Misc ###
+todo.md

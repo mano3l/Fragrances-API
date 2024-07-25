@@ -4,6 +4,7 @@ import com.personal.fragrances.domain.Fragrance;
 import com.personal.fragrances.repository.FragranceRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -15,8 +16,8 @@ public class FragranceService {
         this.fragranceRepository = fragranceRepository;
     }
 
-    public Fragrance retrieveFragrance(UUID id) {
-        return this.fragranceRepository.findById(id).orElseThrow(() -> new RuntimeException("No fragrance found"));
+    public Fragrance retrieveFragrance(UUID id) throws NoSuchElementException{
+        return this.fragranceRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No fragrance found"));
     }
 
     public Fragrance saveFragrance(Fragrance fragrance) {

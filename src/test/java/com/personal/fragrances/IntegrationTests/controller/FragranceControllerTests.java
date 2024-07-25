@@ -1,4 +1,4 @@
-package com.personal.fragrances.controller;
+package com.personal.fragrances.IntegrationTests.controller;
 
 import com.personal.fragrances.repository.FragranceRepository;
 import io.restassured.RestAssured;
@@ -43,9 +43,9 @@ class FragranceControllerTests {
     }
 
     @Test
-    @DisplayName("Get fragrance by ID")
+    @DisplayName("GET Fragrance by ID - Returns Fragrance Details")
     @Sql(scripts = "classpath:scripts/insert_fragrance.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    void shouldGetFragranceById() {
+    void getFragranceById_ReturnsFragranceDetails() {
         String id = "cd7534fa-6dab-4fa5-9411-102fc2ccf0bf";
         given()
                 .contentType(ContentType.JSON)

@@ -1,7 +1,8 @@
-package com.personal.fragrances.service;
+package com.personal.fragrances.UnitTests.service;
 
 import com.personal.fragrances.domain.Fragrance;
 import com.personal.fragrances.repository.FragranceRepository;
+import com.personal.fragrances.service.FragranceService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,7 +61,7 @@ class FragranceServiceTests {
         // When
         // Then
         assertThatThrownBy(() -> fragranceService.retrieveFragrance(id))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(NoSuchElementException.class)
                 .hasMessage("No fragrance found");
     }
 
