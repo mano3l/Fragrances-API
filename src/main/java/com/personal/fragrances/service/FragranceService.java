@@ -23,4 +23,14 @@ public class FragranceService {
     public Fragrance saveFragrance(Fragrance fragrance) {
         return this.fragranceRepository.save(fragrance);
     }
+
+    public Fragrance updateFragrance(UUID id, Fragrance fragrance) {
+        Fragrance existingFragrance = this.fragranceRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No fragrance found"));
+        existingFragrance.setName(fragrance.getName());
+        return this.fragranceRepository.save(existingFragrance);
+    }
+
+    public void deleteFragrance(UUID id) {
+        this.fragranceRepository.deleteById(id);
+    }
 }

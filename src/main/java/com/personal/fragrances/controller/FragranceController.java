@@ -4,13 +4,11 @@ import com.personal.fragrances.domain.Fragrance;
 import com.personal.fragrances.dto.FragranceDto;
 import com.personal.fragrances.mapper.FragranceMapper;
 import com.personal.fragrances.service.FragranceService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -29,14 +27,30 @@ public class FragranceController {
 
     @GetMapping("fragrance/{id}")
     public ResponseEntity<FragranceDto> fragrance(@PathVariable UUID id) {
-        Fragrance fragrance;
-        try {
-            fragrance = this.fragranceService.retrieveFragrance(id);
-        } catch (Exception exception) {
-            log.error(exception.getMessage());
-            throw exception;
-        }
+        Fragrance fragrance = this.fragranceService.retrieveFragrance(id);
         FragranceDto fragranceDto = fragranceMapper.toDto(fragrance);
         return new ResponseEntity<>(fragranceDto, HttpStatus.OK);
+    }
+
+    @PostMapping("fragrance")
+    public ResponseEntity<FragranceDto> save(@Valid @RequestBody FragranceDto fragranceDto) {
+        Fragrance fragrance = fragranceMapper.toEntity(fragranceDto);
+        Fragrance savedFragrance = this.fragranceService.saveFragrance(fragrance);
+        FragranceDto savedFragranceDto = fragranceMapper.toDto(savedFragrance);
+        return new ResponseEntity<>(savedFragranceDto, HttpStatus.CREATED);
+    }
+
+    @PutMapping("fragrance/{id}")
+    public ResponseEntity<FragranceDto> update(@PathVariable UUID id, @Valid @RequestBody FragranceDto fragranceDto) {
+        Fragrance fragrance = fragranceMapper.toEntity(fragranceDto);
+        Fragrance updatedFragrance = this.fragranceService.updateFragrance(id, fragrance);
+        FragranceDto updatedFragranceDto = fragranceMapper.toDto(updatedFragrance);
+        return new ResponseEntity<>(updatedFragranceDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("fragrance/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        this.fragranceService.deleteFragrance(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

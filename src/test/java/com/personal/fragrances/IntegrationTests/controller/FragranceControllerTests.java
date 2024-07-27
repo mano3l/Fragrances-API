@@ -56,4 +56,47 @@ class FragranceControllerTests {
                 .body("name", equalTo("Fresh Breeze"));
     }
 
+    @Test
+    @DisplayName("POST Fragrance - Returns Created Status")
+    void postFragrance_ReturnsCreatedStatus() {
+        String requestBody = "{\"name\": \"Cold Water\"}";
+        given()
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .when()
+                .post("/api/fragrance")
+                .then()
+                .statusCode(201)
+                .body("name", equalTo("Cold Water"));
+    }
+
+    @Test
+    @DisplayName("PUT Fragrance - Returns OK Status")
+    @Sql(scripts = "classpath:scripts/insert_fragrance.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void putFragrance_ReturnsOkStatus() {
+        String id = "cd7534fa-6dab-4fa5-9411-102fc2ccf0bf";
+        String requestBody = "{\"name\": \"Cold Water\"}";
+        given()
+                .contentType(ContentType.JSON)
+                .body(requestBody)
+                .when()
+                .put("/api/fragrance/" + id)
+                .then()
+                .statusCode(200)
+                .body("name", equalTo("Cold Water"));
+    }
+
+    @Test
+    @DisplayName("DELETE Fragrance - Returns No Content Status")
+    @Sql(scripts = "classpath:scripts/insert_fragrance.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void deleteFragrance_ReturnsNoContentStatus() {
+        String id = "cd7534fa-6dab-4fa5-9411-102fc2ccf0bf";
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/api/fragrance/" + id)
+                .then()
+                .statusCode(204);
+    }
+
 }

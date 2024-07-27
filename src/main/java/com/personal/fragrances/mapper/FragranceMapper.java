@@ -14,4 +14,11 @@ public class FragranceMapper {
         return dto;
     }
 
+    public Fragrance toEntity(FragranceDto fragranceDto) {
+        Fragrance entity = new Fragrance(
+                fragranceDto.name()
+        );
+        return entity;
+    }
+
 }

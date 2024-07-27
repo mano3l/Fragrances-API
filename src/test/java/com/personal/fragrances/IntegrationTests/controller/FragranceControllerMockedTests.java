@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.NoSuchElementException;
@@ -16,7 +17,9 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(FragranceController.class)
 class FragranceControllerMockedTests {
@@ -30,16 +33,19 @@ class FragranceControllerMockedTests {
     @MockBean
     private FragranceMapper fragranceMapper;
 
+    @Autowired
+    private FragranceController fragranceController;
+
     @Test
     @DisplayName("NoSuchElementExceptionThrown - return fragrance not found")
     void testHandleNoSuchElementException() throws Exception {
         UUID id = UUID.randomUUID();
         when(fragranceService.retrieveFragrance(any(UUID.class)))
-                .thenThrow(new NoSuchElementException("Fragrance not found"));
+                .thenThrow(new NoSuchElementException());
 
         mockMvc.perform(get("/api/fragrance/" + id))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Fragrance not found."));
+                .andExpect(jsonPath("$.message").value("Fragrance not found"));
     }
 
     @Test
@@ -47,10 +53,21 @@ class FragranceControllerMockedTests {
     void testHandleGenericException() throws Exception {
         UUID id = UUID.randomUUID();
         when(fragranceService.retrieveFragrance(any(UUID.class)))
-                .thenThrow(new RuntimeException("Some unexpected error"));
+                .thenThrow(new RuntimeException());
 
         mockMvc.perform(get("/api/fragrance/" + id))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value("An unexpected error occurred."));
+                .andExpect(jsonPath("$.message").value("An unexpected error occurred"));
     }
+
+    @Test
+    @DisplayName("POST Fragrance - Returns Bad Request Status")
+    void testHandleMethodArgumentNotValidException() throws Exception {
+        mockMvc.perform(post("/api/fragrance")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"));
+    }
+
 }

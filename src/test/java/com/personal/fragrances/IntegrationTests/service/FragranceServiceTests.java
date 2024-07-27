@@ -1,4 +1,4 @@
-package com.personal.fragrances.UnitTests.service;
+package com.personal.fragrances.IntegrationTests.service;
 
 import com.personal.fragrances.domain.Fragrance;
 import com.personal.fragrances.repository.FragranceRepository;
@@ -77,6 +77,34 @@ class FragranceServiceTests {
         assertThat(savedFragrance).isNotNull();
         assertThat(savedFragrance.getId()).isNotNull();
         assertThat(savedFragrance.getName()).isEqualTo("Lavanda");
+    }
+
+    @Test
+    @DisplayName("Update fragrance on database")
+    @Sql(scripts = "classpath:scripts/insert_fragrance.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void shouldUpdateFragrance() {
+        // Given
+        UUID id = UUID.fromString("cd7534fa-6dab-4fa5-9411-102fc2ccf0bf");
+        Fragrance fragrance = new Fragrance();
+        fragrance.setName("Lavanda");
+        // When
+        Fragrance updatedFragrance = fragranceService.updateFragrance(id, fragrance);
+        // Then
+        assertThat(updatedFragrance).isNotNull();
+        assertThat(updatedFragrance.getId()).isEqualTo(id);
+        assertThat(updatedFragrance.getName()).isEqualTo("Lavanda");
+    }
+
+    @Test
+    @DisplayName("Delete fragrance from database")
+    @Sql(scripts = "classpath:scripts/insert_fragrance.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void shouldDeleteFragrance() {
+        // Given
+        UUID id = UUID.fromString("cd7534fa-6dab-4fa5-9411-102fc2ccf0bf");
+        // When
+        fragranceService.deleteFragrance(id);
+        // Then
+        assertThat(fragranceRepository.findById(id)).isEmpty();
     }
 
 }

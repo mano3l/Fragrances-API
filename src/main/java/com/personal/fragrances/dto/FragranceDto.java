@@ -1,13 +1,8 @@
 package com.personal.fragrances.dto;
 
-import lombok.Value;
+import jakarta.validation.constraints.NotBlank;
 
 import java.io.Serializable;
 
-/**
- * DTO for {@link com.personal.fragrances.domain.Fragrance}
- */
-@Value
-public class FragranceDto implements Serializable {
-    String name;
+public record FragranceDto(@NotBlank String name) implements Serializable {
 }
