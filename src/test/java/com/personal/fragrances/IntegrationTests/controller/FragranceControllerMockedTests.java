@@ -45,7 +45,19 @@ class FragranceControllerMockedTests {
 
         mockMvc.perform(get("/api/fragrance/" + id))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Fragrance not found"));
+                .andExpect(jsonPath("$.message").value("Resource not found"))
+                .andExpect(jsonPath("$.errorCode").value("RESOURCE_NOT_FOUND"));
+    }
+
+    @Test
+    @DisplayName("POST Fragrance - Returns Bad Request Status")
+    void testHandleValidationExceptions() throws Exception {
+        mockMvc.perform(post("/api/fragrance")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"name\":\"\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.errorCode").value("VALIDATION_FAILED"));
     }
 
     @Test
@@ -57,17 +69,21 @@ class FragranceControllerMockedTests {
 
         mockMvc.perform(get("/api/fragrance/" + id))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value("An unexpected error occurred"));
+                .andExpect(jsonPath("$.message").value("An unexpected error occurred"))
+                .andExpect(jsonPath("$.errorCode").value("INTERNAL_SERVER_ERROR"));
     }
 
     @Test
-    @DisplayName("POST Fragrance - Returns Bad Request Status")
-    void testHandleMethodArgumentNotValidException() throws Exception {
-        mockMvc.perform(post("/api/fragrance")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"\"}"))
+    @DisplayName("IllegalArgumentExceptionThrown - return invalid argument")
+    void testHandleIllegalArgumentException() throws Exception {
+        UUID id = UUID.randomUUID();
+        when(fragranceService.retrieveFragrance(any(UUID.class)))
+                .thenThrow(new IllegalArgumentException("Invalid argument"));
+
+        mockMvc.perform(get("/api/fragrance/" + id))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"));
+                .andExpect(jsonPath("$.message").value("Invalid argument"))
+                .andExpect(jsonPath("$.errorCode").value("INVALID_ARGUMENT"));
     }
 
 }
