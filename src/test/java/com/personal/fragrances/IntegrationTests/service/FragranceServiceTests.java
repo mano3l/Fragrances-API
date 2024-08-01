@@ -1,5 +1,6 @@
 package com.personal.fragrances.IntegrationTests.service;
 
+import com.personal.fragrances.TestSecurityConfig;
 import com.personal.fragrances.domain.Fragrance;
 import com.personal.fragrances.repository.FragranceRepository;
 import com.personal.fragrances.service.FragranceService;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -22,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
+@Import(TestSecurityConfig.class)
 @Testcontainers
 @ActiveProfiles("test")
 class FragranceServiceTests {
@@ -61,8 +64,7 @@ class FragranceServiceTests {
         // When
         // Then
         assertThatThrownBy(() -> fragranceService.retrieveFragrance(id))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("No fragrance found");
+                .isInstanceOf(NoSuchElementException.class);
     }
 
     @Test

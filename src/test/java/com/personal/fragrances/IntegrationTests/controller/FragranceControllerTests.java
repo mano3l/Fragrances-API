@@ -1,5 +1,8 @@
 package com.personal.fragrances.IntegrationTests.controller;
 
+import com.personal.fragrances.TestSecurityConfig;
+import com.personal.fragrances.infra.auth.JwtAuthFilter;
+import com.personal.fragrances.infra.auth.JwtUtil;
 import com.personal.fragrances.repository.FragranceRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -8,6 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -18,6 +28,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(TestSecurityConfig.class)
 @Testcontainers
 @ActiveProfiles("test")
 class FragranceControllerTests {
@@ -28,6 +39,11 @@ class FragranceControllerTests {
     @Autowired
     private FragranceRepository fragranceRepository;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    private String jwtToken;
+
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
@@ -35,6 +51,8 @@ class FragranceControllerTests {
     @BeforeEach
     void setup() {
         RestAssured.baseURI = "http://localhost:" + port;
+
+        jwtToken = jwtUtil.generateToken("testUser");
     }
 
     @AfterEach
@@ -48,6 +66,7 @@ class FragranceControllerTests {
     void getFragranceById_ReturnsFragranceDetails() {
         String id = "cd7534fa-6dab-4fa5-9411-102fc2ccf0bf";
         given()
+                .header("Authorization", "Bearer " + jwtToken)
                 .contentType(ContentType.JSON)
                 .when()
                 .get("/api/fragrance/" + id)
@@ -61,6 +80,7 @@ class FragranceControllerTests {
     void postFragrance_ReturnsCreatedStatus() {
         String requestBody = "{\"name\": \"Cold Water\"}";
         given()
+                .header("Authorization", "Bearer " + jwtToken)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .when()
@@ -77,6 +97,7 @@ class FragranceControllerTests {
         String id = "cd7534fa-6dab-4fa5-9411-102fc2ccf0bf";
         String requestBody = "{\"name\": \"Cold Water\"}";
         given()
+                .header("Authorization", "Bearer " + jwtToken)
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .when()
@@ -92,6 +113,7 @@ class FragranceControllerTests {
     void deleteFragrance_ReturnsNoContentStatus() {
         String id = "cd7534fa-6dab-4fa5-9411-102fc2ccf0bf";
         given()
+                .header("Authorization", "Bearer " + jwtToken)
                 .contentType(ContentType.JSON)
                 .when()
                 .delete("/api/fragrance/" + id)

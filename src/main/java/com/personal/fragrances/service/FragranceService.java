@@ -17,15 +17,15 @@ public class FragranceService {
     }
 
     public Fragrance retrieveFragrance(UUID id) throws NoSuchElementException{
-        return this.fragranceRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No fragrance found"));
+        return this.fragranceRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
     public Fragrance saveFragrance(Fragrance fragrance) {
         return this.fragranceRepository.save(fragrance);
     }
 
-    public Fragrance updateFragrance(UUID id, Fragrance fragrance) {
-        Fragrance existingFragrance = this.fragranceRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No fragrance found"));
+    public Fragrance updateFragrance(UUID id, Fragrance fragrance) throws NoSuchElementException{
+        Fragrance existingFragrance = this.fragranceRepository.findById(id).orElseThrow(NoSuchElementException::new);
         existingFragrance.setName(fragrance.getName());
         return this.fragranceRepository.save(existingFragrance);
     }
